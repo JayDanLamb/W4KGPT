@@ -16,6 +16,9 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write  # ✅ This allows the workflow to push commits
+
 jobs:
   start:
     runs-on: ubuntu-latest
