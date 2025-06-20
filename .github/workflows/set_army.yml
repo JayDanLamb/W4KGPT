@@ -1,0 +1,49 @@
+name: Set Army
+
+on:
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: "Name of the game (e.g. jay-vs-paul)"
+        required: true
+        type: string
+      army_list:
+        description: "Army list text for one player"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies (if needed)
+        run: pip install -r ../requirements.txt || true
+
+      - name: Set army list
+        run: |
+          mkdir -p games
+          python set_army.py "${{ github.event.inputs.game_id }}" "${{ github.event.inputs.army_list }}"
+
+      - name: Commit updated game file
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git pull
+          git add games/
+          git commit -m "🛡️ Update army list in game '${{ github.event.inputs.game_id }}'" || echo "Nothing to commit"
+          git push
