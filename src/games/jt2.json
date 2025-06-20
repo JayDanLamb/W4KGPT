@@ -1,0 +1,20 @@
+{
+  "name": "jt2",
+  "players": [
+    {
+      "name": "j",
+      "faction": "Unknown",
+      "points": null,
+      "list_text": "j"
+    },
+    {
+      "name": "t",
+      "faction": "Unknown",
+      "points": null,
+      "list_text": "t"
+    }
+  ],
+  "phase": "setup",
+  "turn": 1,
+  "log": []
+}
