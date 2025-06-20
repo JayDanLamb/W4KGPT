@@ -3,21 +3,13 @@ name: Start Game
 on:
   workflow_dispatch:
     inputs:
-      game_id:
-        description: "Unique name for the game (e.g. jay-vs-paul)"
-        required: true
-        type: string
-      player1_list:
-        description: "Player 1 army list text"
-        required: true
-        type: string
-      player2_list:
-        description: "Player 2 army list text"
+      players:
+        description: "Comma-separated list of player names (e.g. Jay,Paul)"
         required: true
         type: string
 
 permissions:
-  contents: write  # ✅ This allows the workflow to push commits
+  contents: write
 
 jobs:
   start:
@@ -27,30 +19,27 @@ jobs:
         working-directory: src
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
 
-    - name: Install dependencies (if needed)
-      run: pip install -r ../requirements.txt || true
+      - name: Install dependencies (if needed)
+        run: pip install -r ../requirements.txt || true
 
-    - name: Start game
-      run: |
-        mkdir -p games
-        python start_game.py \
-          "${{ github.event.inputs.game_id }}" \
-          "${{ github.event.inputs.player1_list }}" \
-          "${{ github.event.inputs.player2_list }}"
+      - name: Start game
+        run: |
+          mkdir -p games
+          python start_game.py "${{ github.event.inputs.players }}"
 
-    - name: Commit game file to repo
-      run: |
-        git config user.name "github-actions"
-        git config user.email "github-actions@github.com"
-        git pull
-        git add games/
-        git commit -m "🎮 Create game '${{ github.event.inputs.game_id }}'" || echo "Nothing to commit"
-        git push
+      - name: Commit game file to repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git pull
+          git add games/
+          git commit -m "🎮 Start game with players: ${{ github.event.inputs.players }}" || echo "Nothing to commit"
+          git push

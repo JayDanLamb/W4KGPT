@@ -1,25 +1,29 @@
 # src/start_game.py
 
 import sys
-from setup.list_parser import parse_player_from_list
 from setup.state import create_game
 
+def generate_game_id(names):
+    return "-vs-".join(n.lower() for n in names)
+
 def main():
-    if len(sys.argv) != 4:
-        print("Usage: python start_game.py <game_id> <player1_list> <player2_list>")
+    if len(sys.argv) != 2:
+        print("Usage: python start_game.py <comma-separated player names>")
         sys.exit(1)
 
-    game_id = sys.argv[1]
-    player1_list = sys.argv[2]
-    player2_list = sys.argv[3]
+    raw_names = sys.argv[1]
+    names = [name.strip() for name in raw_names.split(",") if name.strip()]
+
+    if len(names) < 2:
+        print("❌ At least two players are required.")
+        sys.exit(1)
+
+    game_id = generate_game_id(names)
+    players = [{"name": name, "faction": None, "points": None, "list_text": None} for name in names]
 
     try:
-        players = [
-            parse_player_from_list(player1_list),
-            parse_player_from_list(player2_list)
-        ]
         create_game(game_id, players)
-        print(f"✅ Game '{game_id}' created successfully.")
+        print(f"✅ Game '{game_id}' created successfully with players: {', '.join(names)}")
     except FileExistsError:
         print(f"⚠️ Game '{game_id}' already exists.")
     except Exception as e:
