@@ -7,6 +7,10 @@ on:
         description: "Name of the game (e.g. jay-vs-paul)"
         required: true
         type: string
+      player_name:
+        description: "Name of the player (must match game)"
+        required: true
+        type: string
       army_list:
         description: "Army list text for one player"
         required: true
@@ -37,7 +41,10 @@ jobs:
       - name: Set army list
         run: |
           mkdir -p games
-          python set_army.py "${{ github.event.inputs.game_id }}" "${{ github.event.inputs.army_list }}"
+          python set_army.py \
+            "${{ github.event.inputs.game_id }}" \
+            "${{ github.event.inputs.player_name }}" \
+            "${{ github.event.inputs.army_list }}"
 
       - name: Commit updated game file
         run: |
@@ -45,5 +52,5 @@ jobs:
           git config user.email "github-actions@github.com"
           git pull
           git add games/
-          git commit -m "🛡️ Update army list in game '${{ github.event.inputs.game_id }}'" || echo "Nothing to commit"
+          git commit -m "🛡️ Update army list for ${{ github.event.inputs.player_name }} in game '${{ github.event.inputs.game_id }}'" || echo "Nothing to commit"
           git push
