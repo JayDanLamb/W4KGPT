@@ -24,7 +24,7 @@ jobs:
         working-directory: src
 
     steps:
-    - name: Checkout
+    - name: Checkout repo
       uses: actions/checkout@v3
 
     - name: Set up Python
@@ -37,7 +37,17 @@ jobs:
 
     - name: Start game
       run: |
+        mkdir -p games
         python start_game.py \
           "${{ github.event.inputs.game_id }}" \
           "${{ github.event.inputs.player1_list }}" \
           "${{ github.event.inputs.player2_list }}"
+
+    - name: Commit game file to repo
+      run: |
+        git config user.name "github-actions"
+        git config user.email "github-actions@github.com"
+        git pull
+        git add games/
+        git commit -m "🎮 Create game '${{ github.event.inputs.game_id }}'" || echo "Nothing to commit"
+        git push
