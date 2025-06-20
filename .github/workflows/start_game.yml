@@ -1,0 +1,43 @@
+name: Start Game
+
+on:
+  workflow_dispatch:
+    inputs:
+      game_id:
+        description: "Unique name for the game (e.g. jay-vs-paul)"
+        required: true
+        type: string
+      player1_list:
+        description: "Player 1 army list text"
+        required: true
+        type: string
+      player2_list:
+        description: "Player 2 army list text"
+        required: true
+        type: string
+
+jobs:
+  start:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.11"
+
+    - name: Install dependencies (if needed)
+      run: pip install -r ../requirements.txt || true
+
+    - name: Start game
+      run: |
+        python start_game.py \
+          "${{ github.event.inputs.game_id }}" \
+          "${{ github.event.inputs.player1_list }}" \
+          "${{ github.event.inputs.player2_list }}"
